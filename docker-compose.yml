@@ -1,0 +1,13 @@
+version: "3"
+services:
+  db:
+    image: "postgres"
+    container_name: "fsharp_postgres"
+    environment:
+      - POSTGRES_USER=fsharp
+      - POSTGRES_PASSWORD=fsharp
+      - POSTGRES_DB=fsharp_db
+    ports:
+      - "5432:5432"
+    volumes:
+    - ./init.sql:/docker-entrypoint-initdb.d/init.sql
