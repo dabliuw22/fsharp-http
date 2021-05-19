@@ -1,0 +1,19 @@
+Suave
+Npgsql.FSharp
+System.Text.Json
+Serilog
+Serilog.Sinks.Console
+Serilog.Sinks.File
+Serilog.Settings.Configuration
+Serilog.Enrichers.Thread
+Serilog.Enrichers.Environment
+Serilog.Enrichers.CorrelationId
+Serilog.Enrichers.Process
+FSharp.Control.Reactive
+FSharp.Control.Reactive.Testing
+FsToolkit.ErrorHandling
+group Build
+FAKE
+group Test
+NUnit
+NUnit.Runners
