@@ -100,16 +100,9 @@ module Handler =
                 |> Async.Catch
                 |> Async.map (Domain.Result.handle (Error.query $"Query Error: {query}"))
 
-            member _.Option query ``params`` mapper =
-                conn
-                |> Sql.existingConnection
-                |> Sql.query query
-                |> Sql.parameters ``params``
-                |> Sql.executeAsync mapper
-                |> Async.AwaitTask
-                |> Async.map (List.tryHead)
-                |> Async.Catch
-                |> Async.map (Domain.Result.handle (Error.query $"Query Error: {query}"))
+            member this.Option query ``params`` mapper =
+                (this :> DatabaseHandler).Query query ``params`` mapper
+                |> Async.map (Result.map List.tryHead)
 
             member _.Command cmd ``params`` =
                 conn
