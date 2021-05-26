@@ -10,40 +10,38 @@ module Config =
           Database: string
           Port: int }
 
+    module FromEnv =
+        open Adapter.Env.Envs
+
+        type DbConfigFromEnv() =
+            member this.From = (this :> FromEnv<DbConfig>).From
+
+            interface FromEnv<DbConfig> with
+                member _.From() =
+                    let host =
+                        getEnvWithDefault "DATABASE_HOST" id "localhost"
+
+                    let username =
+                        getEnvWithDefault "DATABASE_USERNAME" id "fsharp"
+
+                    let password =
+                        getEnvWithDefault "DATABASE_PASSWORD" id "fsharp"
+
+                    let database =
+                        getEnvWithDefault "DATABASE_NAME" id "fsharp_db"
+
+                    let port =
+                        getEnvWithDefault "DATABASE_PORT" (fun p -> int p) 5432
+
+                    { Host = host
+                      Username = username
+                      Password = password
+                      Database = database
+                      Port = port }
+
     module DbConfig =
-        open System
 
-        let private getEnv (name: string) : string option =
-            let value = Environment.GetEnvironmentVariable name
-
-            if value = null then
-                None
-            else
-                Some value
-
-        let fromEnv () : DbConfig =
-            let host =
-                defaultArg (getEnv "DATABASE_HOST") "localhost"
-
-            let username =
-                defaultArg (getEnv "DATABASE_USERNAME") "fsharp"
-
-            let password =
-                defaultArg (getEnv "DATABASE_PASSWORD") "fsharp"
-
-            let database =
-                defaultArg (getEnv "DATABASE_NAME") "fsharp_db"
-
-            let port =
-                (defaultArg (Option.map (fun p -> int p) (getEnv "DATABASE_PORT")) 5432)
-
-            { Host = host
-              Username = username
-              Password = password
-              Database = database
-              Port = port }
-
-        let connectionStr
+        let toConnectionStr
             { Host = host
               Username = username
               Password = pass
