@@ -13,7 +13,11 @@ let main argv =
     let _ = Log.info "Start Server"
 
     use connection =
-        new NpgsqlConnection((DbConfig.fromEnv >> DbConfig.connectionStr) ())
+        new NpgsqlConnection(
+            (FromEnv.DbConfigFromEnv().From
+             >> DbConfig.toConnectionStr)
+                ()
+        )
 
     connection.Open()
 
