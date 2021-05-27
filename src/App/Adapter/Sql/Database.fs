@@ -64,6 +64,7 @@ module Error =
     let query msj = QueryError msj
 
 module Handler =
+    open Domain
 
     type DatabaseHandler =
         abstract member Query :
@@ -96,7 +97,7 @@ module Handler =
                 |> Sql.executeAsync mapper
                 |> Async.AwaitTask
                 |> Async.Catch
-                |> Async.map (Domain.Result.handle (Error.query $"Query Error: {query}"))
+                |> Async.map (Error.Handler.handle (Error.query $"Query Error: {query}"))
 
             member this.Option query ``params`` mapper =
                 (this :> DatabaseHandler).Query query ``params`` mapper
@@ -110,7 +111,7 @@ module Handler =
                 |> Sql.executeNonQueryAsync
                 |> Async.AwaitTask
                 |> Async.Catch
-                |> Async.map (Domain.Result.handle (Error.command $"Command Error: {cmd}"))
+                |> Async.map (Error.Handler.handle (Error.command $"Command Error: {cmd}"))
 
             member _.CommandRow cmd ``params`` mapper =
                 conn
@@ -120,4 +121,4 @@ module Handler =
                 |> Sql.executeRowAsync mapper
                 |> Async.AwaitTask
                 |> Async.Catch
-                |> Async.map (Domain.Result.handle (Error.command $"Command Error: {cmd}"))
+                |> Async.map (Error.Handler.handle (Error.command $"Command Error: {cmd}"))
