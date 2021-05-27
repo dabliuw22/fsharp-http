@@ -6,7 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Domain\Products.fs" />
-    <Compile Include="Domain\Result.fs" />
+    <Compile Include="Domain\Error\Handler.fs" />
     <Compile Include="Application\Products.fs" />
     <Compile Include="Adapter\Env\Envs.fs" />
     <Compile Include="Adapter\Sql\Database.fs" />
