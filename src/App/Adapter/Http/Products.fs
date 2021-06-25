@@ -76,8 +76,7 @@ module Route =
                 return!
                     (Handler.handle
                         result
-                        (fun json ->
-                            Response.handle json (fun body -> Successful.OK body) (ServerErrors.INTERNAL_ERROR ""))
+                        (fun json -> Response.handle json (Successful.OK) (ServerErrors.INTERNAL_ERROR ""))
                         (Error.handle))
                         ctx
             }
@@ -96,8 +95,7 @@ module Route =
                 return!
                     Handler.handle<string option, Error.ProductError>
                         result
-                        (fun json ->
-                            Response.handle json (fun json -> Successful.OK json) (ServerErrors.INTERNAL_ERROR ""))
+                        (fun json -> Response.handle json (Successful.OK) (ServerErrors.INTERNAL_ERROR ""))
                         (Error.handle)
                         ctx
             }
@@ -115,8 +113,7 @@ module Route =
 
             Handler.handle<string option, Error.ProductError>
                 result
-                (fun response ->
-                    Response.handle response (fun json -> Successful.CREATED json) (ServerErrors.INTERNAL_ERROR ""))
+                (fun response -> Response.handle response (Successful.CREATED) (ServerErrors.INTERNAL_ERROR ""))
                 (Error.handle)
 
         Request.handle<Data.ProductCommandDto> request f
@@ -128,12 +125,7 @@ module Route =
 
                 let! result = Data.ProductId id |> handle.DeleteById
 
-                return!
-                    Handler.handle<int, Error.ProductError>
-                        result
-                        (fun _ -> (Successful.ACCEPTED "").Json())
-                        (Error.handle)
-                        ctx
+                return! Handler.handle<int, Error.ProductError> result (fun _ -> (Successful.ACCEPTED "").Json()) (Error.handle) ctx
             }
 
     let app (handle: Handle.ProductsHandle) : HttpContext -> Async<HttpContext option> =
