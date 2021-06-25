@@ -3,13 +3,15 @@ namespace Adapter.Http.Json
 open System.Text.Json
 
 module Serializer =
-    let serialize<'A> (data: 'A) =
+    let serialize<'a> (data: 'a) =
         try
             JsonSerializer.Serialize data |> Some
-        with _ -> None
+        with
+        | _ -> None
 
 module Deserializer =
-    let deserialize<'A> (json: string) =
+    let deserialize<'a> (json: string) =
         try
-            JsonSerializer.Deserialize<'A> json |> Some
-        with _ -> None
+            JsonSerializer.Deserialize<'a> json |> Some
+        with
+        | _ -> None
