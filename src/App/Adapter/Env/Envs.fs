@@ -8,7 +8,7 @@ type FromEnv<'a> =
 let getEnv (name: string) : string option =
     let value = Environment.GetEnvironmentVariable name
 
-    if value = null then
+    if isNull value then
         None
     else
         Some value
