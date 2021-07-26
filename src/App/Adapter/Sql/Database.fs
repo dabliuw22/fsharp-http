@@ -31,7 +31,7 @@ module Config =
                         getEnvWithDefault "DATABASE_NAME" id "fsharp_db"
 
                     let port =
-                        getEnvWithDefault "DATABASE_PORT" (fun p -> int p) 5432
+                        getEnvWithDefault "DATABASE_PORT" int 5432
 
                     { Host = host
                       Username = username
@@ -68,24 +68,15 @@ module Handler =
 
     type DatabaseHandler =
         abstract member Query :
-            string ->
-            ((string * SqlValue) list) ->
-            (RowReader -> 'a) ->
-            Async<Result<'a list, Error.DatabaseError>>
+            string -> ((string * SqlValue) list) -> (RowReader -> 'a) -> Async<Result<'a list, Error.DatabaseError>>
 
         abstract member Option :
-            string ->
-            ((string * SqlValue) list) ->
-            (RowReader -> 'a) ->
-            Async<Result<'a option, Error.DatabaseError>>
+            string -> ((string * SqlValue) list) -> (RowReader -> 'a) -> Async<Result<'a option, Error.DatabaseError>>
 
         abstract member Command : string -> ((string * SqlValue) list) -> Async<Result<int, Error.DatabaseError>>
 
         abstract member CommandRow :
-            string ->
-            ((string * SqlValue) list) ->
-            (RowReader -> 'a) ->
-            Async<Result<'a, Error.DatabaseError>>
+            string -> ((string * SqlValue) list) -> (RowReader -> 'a) -> Async<Result<'a, Error.DatabaseError>>
 
     type PgDatabaseHandler(conn: Npgsql.NpgsqlConnection) =
         interface DatabaseHandler with
