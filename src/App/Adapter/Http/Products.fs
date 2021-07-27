@@ -66,7 +66,7 @@ module Route =
     let productsHandler (handle: Handle.ProductsHandle) : WebPart =
         fun (ctx: HttpContext) ->
             async {
-                let _ = Log.info "Get All Products"
+                Log.info "Get All Products"
 
                 let! result =
                     handle.GetAll
@@ -84,7 +84,7 @@ module Route =
     let productByIdHandler (handle: Handle.ProductsHandle) (id: string) : WebPart =
         fun (ctx: HttpContext) ->
             async {
-                let _ = Log.info $"Get Product By Id: {id}"
+                Log.info $"Get Product By Id: {id}"
 
                 let! result =
                     Data.ProductId id
@@ -101,7 +101,7 @@ module Route =
             }
 
     let createHandler (handle: Handle.ProductsHandle) (request: HttpRequest) : WebPart =
-        let _ = Log.info "Create Product"
+        Log.info "Create Product"
 
         let f (dto: Data.ProductCommandDto) =
             let result =
@@ -121,7 +121,7 @@ module Route =
     let deleteHandler (handle: Handle.ProductsHandle) (id: string) : WebPart =
         fun (ctx: HttpContext) ->
             async {
-                let _ = Log.info $"Delete Product By Id: {id}"
+                Log.info $"Delete Product By Id: {id}"
 
                 let! result = Data.ProductId id |> handle.DeleteById
 
