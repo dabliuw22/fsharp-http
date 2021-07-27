@@ -10,7 +10,7 @@ open Npgsql
 [<EntryPoint>]
 let main argv =
 
-    let _ = Log.info "Start Server"
+    Log.info "Start Server"
 
     use connection =
         new NpgsqlConnection(
@@ -21,14 +21,14 @@ let main argv =
 
     connection.Open()
 
-    let db = new PgDatabaseHandler(connection)
+    let db = PgDatabaseHandler(connection)
 
-    let query = new Query.DefaultQueryProducts(db)
+    let query = Query.DefaultQueryProducts(db)
 
-    let command = new Command.DefaultCommandProducts(db)
+    let command = Command.DefaultCommandProducts(db)
 
     let handle =
-        new Handle.DefaultProductsHandle(query, command)
+        Handle.DefaultProductsHandle(query, command)
 
     startWebServer defaultConfig (app handle)
     0
