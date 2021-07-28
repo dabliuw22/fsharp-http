@@ -31,3 +31,4 @@ tmp
 *.obtained
 build/
 build.fsx.lock
+.DS_Store
