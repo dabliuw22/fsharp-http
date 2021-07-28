@@ -11,10 +11,10 @@ open Serilog.Enrichers
 
 module Log =
 
-    let template =
+    let private template =
         "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{MachineName}] [{Level:u3}] [{CorrelationId}] {Message:lj} {Properties}{NewLine}{Exception}"
 
-    let logger =
+    let private logger =
         LoggerConfiguration()
             .MinimumLevel.Information()
             .Enrich.WithThreadId()
@@ -26,14 +26,14 @@ module Log =
 
     type LogAction = string -> unit
 
-    let info : LogAction =
+    let info: LogAction =
         fun msj -> using logger (fun log -> log.ForContext<Log>().Information msj)
 
-    let error : LogAction =
+    let error: LogAction =
         fun msj -> using logger (fun log -> log.Error msj)
 
-    let warning : LogAction =
+    let warning: LogAction =
         fun msj -> using logger (fun log -> log.Warning msj)
 
-    let debug : LogAction =
+    let debug: LogAction =
         fun msj -> using logger (fun log -> log.Debug msj)
