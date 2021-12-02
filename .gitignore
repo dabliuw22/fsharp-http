@@ -32,3 +32,4 @@ tmp
 build/
 build.fsx.lock
 .DS_Store
+logs/
