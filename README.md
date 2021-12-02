@@ -16,6 +16,8 @@ $ dotnet paket add System.Text.Json --version 5.0.2 --project App
 $ dotnet paket add Serilog --version 2.10.1-dev-01285 --project App
 $ dotnet paket add Serilog.Sinks.Console --version 4.0.0-dev-00839 --project App
 $ dotnet paket add Serilog.Sinks.File --version 5.0.0-dev-00909 --project App
+$ dotnet paket add Serilog.Formatting.Compact --version 1.1.0 --project App
+$ dotnet paket add Serilog.Sinks.Async --version 1.5.0 --project App
 $ dotnet paket add Serilog.Settings.Configuration --version 3.2.0-dev-00269 --project App
 $ dotnet paket add Serilog.Enrichers.Thread --version 3.2.0-dev-00750 --project App
 $ dotnet paket add Serilog.Enrichers.Environment --version 2.2.0-dev-00784 --project App
