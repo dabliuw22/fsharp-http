@@ -10,10 +10,12 @@ Serilog.Enrichers.Environment
 Serilog.Enrichers.CorrelationId
 Serilog.Enrichers.Process
 FSharp.Control.Reactive
-FSharp.Control.Reactive.Testing
 FsToolkit.ErrorHandling
+Serilog.Formatting.Compact
+Serilog.Sinks.Async
 group Build
 FAKE
 group Test
 NUnit
 NUnit.Runners
+FSharp.Control.Reactive.Testing

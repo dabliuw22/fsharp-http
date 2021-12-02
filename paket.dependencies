@@ -9,7 +9,9 @@ nuget Serilog.Enrichers.CorrelationId 3.0.1
 nuget Serilog.Enrichers.Environment 2.2.0-dev-00784 dev
 nuget Serilog.Enrichers.Process 2.0.1
 nuget Serilog.Enrichers.Thread 3.2.0-dev-00750 dev
+nuget Serilog.Formatting.Compact 1.1.0
 nuget Serilog.Settings.Configuration 3.2.0-dev-00269 dev
+nuget Serilog.Sinks.Async 1.5.0
 nuget Serilog.Sinks.Console 4.0.0-dev-00839 dev
 nuget Serilog.Sinks.File 5.0.0-dev-00909 dev
 nuget Suave 2.6.0
