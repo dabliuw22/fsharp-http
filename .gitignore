@@ -33,3 +33,7 @@ build/
 build.fsx.lock
 .DS_Store
 logs/
+
+#Paket dependency manager
+.paket/
+paket-files/
