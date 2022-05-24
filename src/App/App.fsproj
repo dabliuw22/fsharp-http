@@ -2,11 +2,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Domain\Products.fs" />
     <Compile Include="Domain\Error\Handler.fs" />
+    <Compile Include="Domain\Result\Handler.fs" />
+    <Compile Include="Domain\Products.fs" />
     <Compile Include="Application\Products.fs" />
     <Compile Include="Adapter\Env\Envs.fs" />
     <Compile Include="Adapter\Sql\Database.fs" />
