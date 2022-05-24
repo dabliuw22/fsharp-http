@@ -13,6 +13,7 @@ Serilog.Formatting.Compact
 Serilog.Sinks.Async
 Suave
 Npgsql.FSharp
+FSharpPlus
 group Build
 FAKE
 group Test

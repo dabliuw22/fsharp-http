@@ -2,6 +2,7 @@ source https://api.nuget.org/v3/index.json
 
 framework: net6.0
 nuget FSharp.Control.Reactive 5.0.2
+nuget FSharpPlus 1.2.4
 nuget FsToolkit.ErrorHandling 2.2.0
 nuget Npgsql.FSharp 4.2.0
 nuget Serilog 2.10.1-dev-01285 dev
