@@ -1,5 +1,3 @@
-Suave
-Npgsql.FSharp
 System.Text.Json
 Serilog
 Serilog.Sinks.Console
@@ -13,6 +11,8 @@ FSharp.Control.Reactive
 FsToolkit.ErrorHandling
 Serilog.Formatting.Compact
 Serilog.Sinks.Async
+Suave
+Npgsql.FSharp
 group Build
 FAKE
 group Test
