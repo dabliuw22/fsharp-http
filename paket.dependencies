@@ -1,22 +1,22 @@
 source https://api.nuget.org/v3/index.json
 
 framework: net6.0
-nuget FSharp.Control.Reactive 5.0.2
+nuget FSharp.Control.Reactive 5.0.5
 nuget FSharpPlus 1.2.4
-nuget FsToolkit.ErrorHandling 2.2.0
+nuget FsToolkit.ErrorHandling 2.13.0
 nuget Npgsql.FSharp 4.2.0
-nuget Serilog 2.10.1-dev-01285 dev
+nuget Serilog 2.11.0
 nuget Serilog.Enrichers.CorrelationId 3.0.1
-nuget Serilog.Enrichers.Environment 2.2.0-dev-00784 dev
+nuget Serilog.Enrichers.Environment 2.2.0
 nuget Serilog.Enrichers.Process 2.0.1
 nuget Serilog.Enrichers.Thread 3.2.0-dev-00750 dev
 nuget Serilog.Formatting.Compact 1.1.0
-nuget Serilog.Settings.Configuration 3.2.0-dev-00269 dev
+nuget Serilog.Settings.Configuration 3.3.0
 nuget Serilog.Sinks.Async 1.5.0
-nuget Serilog.Sinks.Console 4.0.0-dev-00839 dev
-nuget Serilog.Sinks.File 5.0.0-dev-00909 dev
+nuget Serilog.Sinks.Console 4.0.1
+nuget Serilog.Sinks.File 5.0.0
 nuget Suave 2.6.2
-nuget System.Text.Json 5.0.2
+nuget System.Text.Json 6.0.4
 
 group Build
 source https://www.nuget.org/api/v2
@@ -26,6 +26,6 @@ nuget FAKE 5.16.0
 group Test
 source https://www.nuget.org/api/v2
 
-nuget NUnit 3.13.2
+nuget FSharp.Control.Reactive.Testing 5.0.5
+nuget NUnit 3.13.3
 nuget NUnit.Runners 3.12.0
-nuget FSharp.Control.Reactive.Testing 5.0.2

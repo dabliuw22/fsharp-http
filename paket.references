@@ -1,22 +1,22 @@
-System.Text.Json
-Serilog
-Serilog.Sinks.Console
-Serilog.Sinks.File
-Serilog.Settings.Configuration
 Serilog.Enrichers.Thread
-Serilog.Enrichers.Environment
 Serilog.Enrichers.CorrelationId
 Serilog.Enrichers.Process
-FSharp.Control.Reactive
-FsToolkit.ErrorHandling
 Serilog.Formatting.Compact
 Serilog.Sinks.Async
 Suave
 Npgsql.FSharp
 FSharpPlus
+Serilog.Sinks.Console
+Serilog.Sinks.File
+Serilog
+Serilog.Settings.Configuration
+Serilog.Enrichers.Environment
+System.Text.Json
+FsToolkit.ErrorHandling
+FSharp.Control.Reactive
 group Build
 FAKE
 group Test
-NUnit
 NUnit.Runners
 FSharp.Control.Reactive.Testing
+NUnit

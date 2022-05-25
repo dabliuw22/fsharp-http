@@ -23,8 +23,8 @@ $ dotnet paket add Serilog.Enrichers.Thread --version 3.2.0-dev-00750 --project 
 $ dotnet paket add Serilog.Enrichers.Environment --version 2.2.0-dev-00784 --project App
 $ dotnet paket add Serilog.Enrichers.CorrelationId --version 3.0.1 --project App
 $ dotnet paket add Serilog.Enrichers.Process --version 2.0.1 --project App
-$ dotnet paket add FSharp.Control.Reactive --version 5.0.2 --project App
-$ dotnet paket add FSharp.Control.Reactive.Testing --version 5.0.2 --project App --group Test
+$ dotnet paket add FSharp.Control.Reactive --version 5.0.5 --project App
+$ dotnet paket add FSharp.Control.Reactive.Testing --version 5.0.5 --project App --group Test
 $ dotnet paket add FsToolkit.ErrorHandling --version 2.2.0 --project App
 ```
 
