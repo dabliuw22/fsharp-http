@@ -28,6 +28,11 @@ $ dotnet paket add FSharp.Control.Reactive.Testing --version 5.0.2 --project App
 $ dotnet paket add FsToolkit.ErrorHandling --version 2.2.0 --project App
 ```
 
+## Apply formatter:
+```bash
+$ find src/App/ -type f -name "*.fs" -not -path "*obj*" | xargs dotnet fantomas
+```
+
 ## Install:
 ```bash
 $ dotnet paket install
