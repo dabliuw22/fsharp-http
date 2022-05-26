@@ -29,7 +29,6 @@ module Config =
                       FilePath = filePath }
 
     module LogConfig =
-
         open System.Runtime.CompilerServices
 
         [<Extension; Sealed>]
