@@ -2,6 +2,7 @@ namespace Adapter.Sql.Products
 
 open Adapter.Sql.Database
 open Domain.Products
+open Domain.Result.Handler
 open Npgsql.FSharp
 open System
 
@@ -28,27 +29,43 @@ module Row =
               CreatedAt = row.datetimeOffset "created_at" }
 
 module Query =
+    [<Literal>]
+    let private findAll = "SELECT * FROM products"
+
+    [<Literal>]
+    let private findById = "SELECT * FROM products WHERE id = @id"
 
     type DefaultQueryProducts(db: Handler.DatabaseHandler) =
         interface Query.QueryProducts with
             member _.GetAll =
-                db.Query "SELECT * FROM products" [] Row.ProductRow.fromRow
-                |> Async.map
-                    (fun result ->
-                        match result with
-                        | Ok v -> Ok(List.map Row.ProductRow.toProduct v)
-                        | _ -> Error Error.notFounds)
+                db.Query findAll [] Row.ProductRow.fromRow
+                |> AsyncResult.handle (fun v -> List.map Row.ProductRow.toProduct v) (fun _ -> Error.notFounds)
 
             member _.GetById(Data.ProductId id) =
-                db.Option "SELECT * FROM products WHERE id = @id" [ "@id", Sql.string id ] Row.ProductRow.fromRow
-                |> Async.map
-                    (fun result ->
-                        match result with
-                        | Ok v -> Ok(Option.map Row.ProductRow.toProduct v)
-                        | _ -> Error(Error.notFound id))
+                db.Option findById [ "@id", Sql.string id ] Row.ProductRow.fromRow
+                |> AsyncResult.handle (fun v -> Option.map Row.ProductRow.toProduct v) (fun _ -> Error.notFound id)
 
 
 module Command =
+    [<Literal>]
+    let private save =
+        """
+        INSERT INTO products (id, name, stock, created_at) 
+        VALUES (@id, @name, @stock, @created) 
+        RETURNING *
+    """
+
+    [<Literal>]
+    let private deleteById = "DELETE FROM products WHERE id = @id"
+
+    [<Literal>]
+    let private update =
+        """
+        UPDATE products 
+        SET name = @name, stock = @stock 
+        WHERE id = @id
+    """
+
     type DefaultCommandProducts(db: Handler.DatabaseHandler) =
         interface Command.CommandProducts with
             member _.Create
@@ -58,40 +75,27 @@ module Command =
                   CreatedAt = Data.ProductCreatedAt created }
                 =
                 db.CommandRow
-                    "INSERT INTO products (id, name, stock, created_at) VALUES (@id, @name, @stock, @created) RETURNING *"
+                    save
                     [ "@id", Sql.string id
                       "@name", Sql.string name
                       "@stock", Sql.double stock
                       "@created", Sql.timestamptz created ]
                     Row.ProductRow.fromRow
-                |> Async.map
-                    (fun result ->
-                        match result with
-                        | Ok v -> Ok(Row.ProductRow.toProduct v)
-                        | _ -> Error(Error.notCreated id))
+                |> AsyncResult.handle (fun v -> Row.ProductRow.toProduct v) (fun _ -> Error.notCreated id)
 
 
-
-            member _.DeleteById(Data.ProductId id) =
-                db.Command "DELETE FROM products WHERE id = @id" [ "@id", Sql.string id ]
-                |> Async.map
-                    (fun result ->
-                        match result with
-                        | Ok v -> Ok v
-                        | _ -> Error(Error.notDeleted id))
+            member _.DeleteById(Data.ProductId pId) =
+                db.Command deleteById [ "@id", Sql.string pId ]
+                |> AsyncResult.handle id (fun _ -> Error.notDeleted pId)
 
             member _.Update
-                { Id = Data.ProductId id
+                { Id = Data.ProductId pId
                   Name = Data.ProductName name
                   Stock = Data.ProductStock stock }
                 =
                 db.Command
-                    "UPDATE products SET name = @name, stock = @stock WHERE id = @id"
+                    update
                     [ "@name", Sql.string name
                       "@stock", Sql.double stock
-                      "@id", Sql.string id ]
-                |> Async.map
-                    (fun result ->
-                        match result with
-                        | Ok v -> Ok v
-                        | _ -> Error(Error.notUpdated id))
+                      "@id", Sql.string pId ]
+                |> AsyncResult.handle id (fun _ -> Error.notUpdated pId)
