@@ -1,13 +1,14 @@
 namespace Domain.Products
 
 open System
+open Domain.Result.Handler
 
 module Data =
     type ProductId =
         | ProductId of string
         override this.ToString() =
             match this with
-            | ProductId v -> "ProductId { " + v + " }"
+            | ProductId v -> $"ProductId {{ {v} }}"
 
     module ProductId =
         let inline make value = ProductId value
@@ -17,7 +18,7 @@ module Data =
         | ProductName of string
         override this.ToString() =
             match this with
-            | ProductName v -> "ProductName { " + v + " }"
+            | ProductName v -> $"ProductName {{ {v} }}"
 
     module ProductName =
         let inline make value = ProductName value
@@ -26,7 +27,7 @@ module Data =
         | ProductStock of double
         override this.ToString() =
             match this with
-            | ProductStock v -> "ProductStock { " + v.ToString() + " }"
+            | ProductStock v -> $"ProductStock {{ {v} }}"
 
     module ProductStock =
         let inline make value = ProductStock value
@@ -35,7 +36,7 @@ module Data =
         | ProductCreatedAt of DateTimeOffset
         override this.ToString() =
             match this with
-            | ProductCreatedAt v -> "ProductCreatedAt { " + v.ToString() + " }"
+            | ProductCreatedAt v -> $"ProductCreatedAt {{ {v} }}"
 
     module ProductCreatedAt =
         let inline make value = ProductCreatedAt value
@@ -47,15 +48,13 @@ module Data =
           Stock: ProductStock
           CreatedAt: ProductCreatedAt }
         override this.ToString() =
-            "Product { Id = "
-            + this.Id.ToString()
-            + ", Name = "
-            + this.Name.ToString()
-            + ", Stock = "
-            + this.Stock.ToString()
-            + ", CreatedAt ="
-            + this.CreatedAt.ToString()
-            + " }"
+            $"""Product {{
+                    Id = {this.Id.ToString()}, 
+                    Name = {this.Name.ToString()}, 
+                    Stock = {this.Stock.ToString()}, 
+                    CreatedAt = {this.CreatedAt.ToString()}
+                }}
+            """
 
     module Product =
         let inline make id name stock created =
@@ -94,11 +93,11 @@ module Error =
 
 module Query =
     type QueryProducts =
-        abstract member GetAll : Async<Result<Data.Product list, Error.ProductError>>
-        abstract member GetById : Data.ProductId -> Async<Result<Data.Product option, Error.ProductError>>
+        abstract member GetAll: AsyncResult<Data.Product list, Error.ProductError>
+        abstract member GetById: Data.ProductId -> AsyncResult<Data.Product option, Error.ProductError>
 
 module Command =
     type CommandProducts =
-        abstract member Create : Data.Product -> Async<Result<Data.Product, Error.ProductError>>
-        abstract member DeleteById : Data.ProductId -> Async<Result<int, Error.ProductError>>
-        abstract member Update : Data.Product -> Async<Result<int, Error.ProductError>>
+        abstract member Create: Data.Product -> AsyncResult<Data.Product, Error.ProductError>
+        abstract member DeleteById: Data.ProductId -> AsyncResult<int, Error.ProductError>
+        abstract member Update: Data.Product -> AsyncResult<int, Error.ProductError>
