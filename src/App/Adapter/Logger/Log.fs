@@ -56,7 +56,7 @@ module Log =
 
     let private logConfig = Config.FromEnv.LogConfigFromEnv().From()
 
-    let logger () = logConfig.ToLoggerConfiguration()
+    let logger () : Core.Logger = logConfig.ToLoggerConfiguration()
 
     type LogAction = string -> string -> unit
 
@@ -66,6 +66,14 @@ module Log =
         static member inline GetLogger(log: Core.Logger) =
             fun (ctx: string) -> log.ForContext("SourceContext", ctx)
 
+    type LoggerHandler =
+        abstract member GetLogger: string -> ILogger
+
+    type DefaultLoggerHandler(log: Core.Logger) =
+        member this.GetLogger = (this :> LoggerHandler).GetLogger
+
+        interface LoggerHandler with
+            member _.GetLogger ctx = log.GetLogger () ctx
 
 
     let info: LogAction =
