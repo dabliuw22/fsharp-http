@@ -12,22 +12,19 @@ module Policy =
         [<Extension>]
         static member inline ToSnakeCase(name: string) =
             String.Concat(
-                name.Select
-                    (fun x i ->
-                        if Char.IsUpper x then
-                            let lower = x |> Char.ToLower |> Char.ToString
-                            if i > 0 then "_" + lower else lower
-                        else
-                            Char.ToString x)
+                name.Select (fun x i ->
+                    if Char.IsUpper x then
+                        let lower = x |> Char.ToLower |> Char.ToString
+                        if i > 0 then "_" + lower else lower
+                    else
+                        Char.ToString x)
             )
 
     type private ToSnakeCase() =
         inherit JsonNamingPolicy()
         override _.ConvertName(name: string) = name.ToSnakeCase()
 
-
-    let toOptions =
-        JsonSerializerOptions(PropertyNamingPolicy = ToSnakeCase())
+    let toOptions = JsonSerializerOptions(PropertyNamingPolicy = ToSnakeCase())
 
 module Serializer =
 
