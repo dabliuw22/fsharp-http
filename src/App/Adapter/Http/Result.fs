@@ -15,5 +15,5 @@ module Handler =
         match result with
         | Ok value -> successful value
         | Error e ->
-            Log.error ("Error")
+            Log.error "Handler" ("Error")
             failure e
