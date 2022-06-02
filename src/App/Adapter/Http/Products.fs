@@ -4,7 +4,6 @@ open Adapter.Http.Extensions
 open Adapter.Http.Json
 open Adapter.Http.Handler
 open Adapter.Http.Result
-open Adapter.Logger
 open Application.Products
 open Domain.Products
 open Suave
@@ -19,15 +18,12 @@ module Data =
           stock: double
           created_at: DateTimeOffset }
         override this.ToString() =
-            "ProductDto { id = "
-            + this.id
-            + ", name = "
-            + this.name
-            + ", stock = "
-            + this.stock.ToString()
-            + ", created_at = "
-            + this.created_at.ToString()
-            + " }"
+            $"""ProductDto {{ 
+                    id = ${this.id}, 
+                    name = ${this.name},
+                    stock = ${this.stock.ToString()}, 
+                    created_at = ${this.created_at.ToString()}
+                }}"""
 
     module ProductQueryDto =
         let make i n s c =
@@ -52,7 +48,7 @@ module Data =
 
 module Error =
 
-    let handle : Error.ErrorHandler<Error.ProductError> =
+    let handle: Error.ErrorHandler<Error.ProductError> =
         fun error ->
             match error with
             | Error.ProductNotFound _ -> (RequestErrors.NOT_FOUND "").Json()
@@ -62,80 +58,88 @@ module Error =
             | Error.ProductNotUpdated _ -> (RequestErrors.CONFLICT "").Json()
 
 module Route =
+    open Adapter.Logger.Log
 
-    let productsHandler (handle: Handle.ProductsHandle) : WebPart =
-        fun (ctx: HttpContext) ->
-            async {
-                Log.info "Get All Products"
+    type ProductRoute(loggerF: LoggerHandler, handler: Handler.ProductHandler) =
+        let logger = loggerF.GetLogger "ProductRoute"
 
-                let! result =
-                    handle.GetAll
-                    |> Async.map (Result.map (List.map Data.ProductQueryDto.fromProduct))
-                    |> Async.map (Result.map Serializer.serialize)
+        let productsHandler: WebPart =
+            fun (ctx: HttpContext) ->
+                async {
+                    logger.Information "Get All Products"
 
-                return!
-                    (Handler.handle
-                        result
-                        (fun json -> Response.handle json (Successful.OK) (ServerErrors.INTERNAL_ERROR ""))
-                        (Error.handle))
-                        ctx
-            }
+                    let! result =
+                        handler.GetAll
+                        |> Async.map (Result.map (List.map Data.ProductQueryDto.fromProduct))
+                        |> Async.map (Result.map Serializer.serialize)
 
-    let productByIdHandler (handle: Handle.ProductsHandle) (id: string) : WebPart =
-        fun (ctx: HttpContext) ->
-            async {
-                Log.info $"Get Product By Id: {id}"
+                    return!
+                        (Handler.handle
+                            result
+                            (fun json -> Response.handle json (Successful.OK) (ServerErrors.INTERNAL_ERROR ""))
+                            (Error.handle))
+                            ctx
+                }
 
-                let! result =
-                    Data.ProductId id
-                    |> handle.GetById
+        let productByIdHandler (id: string) : WebPart =
+            fun (ctx: HttpContext) ->
+                async {
+                    logger.Information $"Get Product By Id: {id}"
+
+                    let! result =
+                        Data.ProductId id
+                        |> handler.GetById
+                        |> Async.map (Result.map Data.ProductQueryDto.fromProduct)
+                        |> Async.map (Result.map Serializer.serialize)
+
+                    return!
+                        Handler.handle<string option, Error.ProductError>
+                            result
+                            (fun json -> Response.handle json (Successful.OK) (ServerErrors.INTERNAL_ERROR ""))
+                            (Error.handle)
+                            ctx
+                }
+
+        let createHandler (request: HttpRequest) : WebPart =
+            logger.Information "Create Product"
+
+            let f (dto: Data.ProductCommandDto) =
+                let result =
+                    Data.ProductCommandDto.toProductGen dto
+                    |> handler.Create
                     |> Async.map (Result.map Data.ProductQueryDto.fromProduct)
                     |> Async.map (Result.map Serializer.serialize)
+                    |> Async.RunSynchronously
 
-                return!
-                    Handler.handle<string option, Error.ProductError>
-                        result
-                        (fun json -> Response.handle json (Successful.OK) (ServerErrors.INTERNAL_ERROR ""))
-                        (Error.handle)
-                        ctx
-            }
+                Handler.handle<string option, Error.ProductError>
+                    result
+                    (fun response -> Response.handle response (Successful.CREATED) (ServerErrors.INTERNAL_ERROR ""))
+                    (Error.handle)
 
-    let createHandler (handle: Handle.ProductsHandle) (request: HttpRequest) : WebPart =
-        Log.info "Create Product"
+            Request.handle<Data.ProductCommandDto> request f
 
-        let f (dto: Data.ProductCommandDto) =
-            let result =
-                Data.ProductCommandDto.toProductGen dto
-                |> handle.Create
-                |> Async.map (Result.map Data.ProductQueryDto.fromProduct)
-                |> Async.map (Result.map Serializer.serialize)
-                |> Async.RunSynchronously
+        let deleteHandler (id: string) : WebPart =
+            fun (ctx: HttpContext) ->
+                async {
+                    logger.Information $"Delete Product By Id: {id}"
 
-            Handler.handle<string option, Error.ProductError>
-                result
-                (fun response -> Response.handle response (Successful.CREATED) (ServerErrors.INTERNAL_ERROR ""))
-                (Error.handle)
+                    let! result = Data.ProductId id |> handler.DeleteById
 
-        Request.handle<Data.ProductCommandDto> request f
+                    return!
+                        Handler.handle<int, Error.ProductError>
+                            result
+                            (fun _ -> (Successful.ACCEPTED "").Json())
+                            (Error.handle)
+                            ctx
+                }
 
-    let deleteHandler (handle: Handle.ProductsHandle) (id: string) : WebPart =
-        fun (ctx: HttpContext) ->
-            async {
-                Log.info $"Delete Product By Id: {id}"
-
-                let! result = Data.ProductId id |> handle.DeleteById
-
-                return! Handler.handle<int, Error.ProductError> result (fun _ -> (Successful.ACCEPTED "").Json()) (Error.handle) ctx
-            }
-
-    let app (handle: Handle.ProductsHandle) : HttpContext -> Async<HttpContext option> =
-        choose [ GET
-                 >=> (path "/products" >=> productsHandler handle)
-                 GET
-                 >=> (pathScan "/products/%s" (fun id -> productByIdHandler handle id))
-                 POST
-                 >=> (path "/products"
-                      >=> request (fun req -> createHandler handle req))
-                 DELETE
-                 >=> (pathScan "/products/%s" (fun id -> deleteHandler handle id))
-                 (RequestErrors.NOT_FOUND "").Json() ]
+        member _.App: HttpContext -> Async<HttpContext option> =
+            choose [ GET >=> (path "/products" >=> productsHandler)
+                     GET
+                     >=> (pathScan "/products/%s" (fun id -> productByIdHandler id))
+                     POST
+                     >=> (path "/products"
+                          >=> request (fun req -> createHandler req))
+                     DELETE
+                     >=> (pathScan "/products/%s" (fun id -> deleteHandler id))
+                     (RequestErrors.NOT_FOUND "").Json() ]
