@@ -3,21 +3,22 @@ open Adapter.Logger
 open Adapter.Http.Products.Route
 open Application.Products
 open Adapter.Sql.Database.Config
+open Adapter.Sql.Database.Config.DbConfig
 open Adapter.Sql.Database.Handler
 open Adapter.Sql.Products
 open Npgsql
 
 [<EntryPoint>]
 let main argv =
+    use log = Log.logger ()
 
-    Log.info "Start Server"
+    let loggerF = Log.DefaultLoggerHandler(log)
 
-    use connection =
-        new NpgsqlConnection(
-            (FromEnv.DbConfigFromEnv().From
-             >> DbConfig.toConnectionStr)
-                ()
-        )
+    let logger = loggerF.GetLogger "Program"
+
+    logger.Information "Start Server"
+
+    use connection = FromEnv.DbConfigFromEnv().From().ToConnection()
 
     connection.Open()
 
@@ -27,8 +28,9 @@ let main argv =
 
     let command = Command.DefaultCommandProducts(db)
 
-    let handle =
-        Handle.DefaultProductsHandle(query, command)
+    let handler = Handler.DefaultProductHandler(query, command)
 
-    startWebServer defaultConfig (app handle)
+    let route = ProductRoute(loggerF, handler)
+
+    startWebServer defaultConfig route.App
     0
