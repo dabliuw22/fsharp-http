@@ -9,10 +9,10 @@ open Adapter.Sql.Products
 open Npgsql
 
 [<EntryPoint>]
-let main argv =
+let main _ =
     use log = Log.logger ()
 
-    let loggerF = Log.DefaultLoggerHandler(log)
+    let loggerF = log |> Log.DefaultLoggerHandler
 
     let logger = loggerF.GetLogger "Program"
 
@@ -22,7 +22,7 @@ let main argv =
 
     connection.Open()
 
-    let db = PgDatabaseHandler(connection)
+    let db = connection |> PgDatabaseHandler
 
     let query = Query.DefaultQueryProducts(db)
 
@@ -32,5 +32,5 @@ let main argv =
 
     let route = ProductRoute(loggerF, handler)
 
-    startWebServer defaultConfig route.App
+    route.App |> startWebServer defaultConfig
     0
