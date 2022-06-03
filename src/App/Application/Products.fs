@@ -1,25 +1,26 @@
 namespace Application.Products
 
 open Domain.Products
+open FSharpPlus
 
-module Handle =
-    type ProductsHandle =
-        abstract member GetAll : Async<Result<Data.Product list, Error.ProductError>>
-        abstract member GetById : Data.ProductId -> Async<Result<Data.Product, Error.ProductError>>
-        abstract member Create : Data.Product -> Async<Result<Data.Product, Error.ProductError>>
-        abstract member DeleteById : Data.ProductId -> Async<Result<int, Error.ProductError>>
-        abstract member Update : Data.Product -> Async<Result<int, Error.ProductError>>
+module Handler =
+    type ProductHandler =
+        abstract member GetAll: Async<Result<Data.Product list, Error.ProductError>>
+        abstract member GetById: Data.ProductId -> Async<Result<Data.Product, Error.ProductError>>
+        abstract member Create: Data.Product -> Async<Result<Data.Product, Error.ProductError>>
+        abstract member DeleteById: Data.ProductId -> Async<Result<int, Error.ProductError>>
+        abstract member Update: Data.Product -> Async<Result<int, Error.ProductError>>
 
-    type DefaultProductsHandle(query: Query.QueryProducts, command: Command.CommandProducts) =
-        member this.GetAll = (this :> ProductsHandle).GetAll
-        member this.GetById = (this :> ProductsHandle).GetById
-        member this.Create = (this :> ProductsHandle).Create
-        member this.DeleteById = (this :> ProductsHandle).DeleteById
-        member this.Update = (this :> ProductsHandle).Update
+    type DefaultProductHandler(query: Query.QueryProducts, command: Command.CommandProducts) =
+        member this.GetAll = (this :> ProductHandler).GetAll
+        member this.GetById = (this :> ProductHandler).GetById
+        member this.Create = (this :> ProductHandler).Create
+        member this.DeleteById = (this :> ProductHandler).DeleteById
+        member this.Update = (this :> ProductHandler).Update
 
-        interface ProductsHandle with
+        interface ProductHandler with
             member _.GetAll =
-                async {
+                monad {
                     let! products = query.GetAll
 
                     return (Result.bindError (fun _ -> Ok([])) products)
